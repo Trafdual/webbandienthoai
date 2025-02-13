@@ -6,6 +6,9 @@ var bodyParser = require('body-parser')
 const app = express()
 const MongoStore = require('connect-mongo')
 var db = require('./models/db')
+const userroutes = require('./routes/UserRouter')
+const sanphamroutes = require('./routes/SanPhamRoutes')
+const loaisanphamroutes = require('./routes/LoaiSanPhamRoutes')
 const uri =
   'mongodb+srv://baongocxink03:KD3qvAqFfpKC1uzX@cluster0.aocmw.mongodb.net/webbandienthoai?retryWrites=true&w=majority'
 
@@ -17,7 +20,6 @@ const mongoStoreOptions = {
 const cors = require('cors')
 
 app.use(cors())
-
 
 app.use(
   session({
@@ -32,14 +34,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(methodOverride('_method'))
 
-
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(express.static(path.join(__dirname, '/uploads')))
 
+app.use('/', userroutes)
+app.use('/', sanphamroutes)
+app.use('/', loaisanphamroutes)
 
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000')
+app.listen(3005, () => {
+  console.log('Server is running on port 3005')
   console.log(__dirname)
 })
 module.exports = app

@@ -2,6 +2,7 @@ const db = require('./db')
 
 const LoaiSPSchema = new db.mongoose.Schema({
   name: { type: String },
+  namekhongdau:{type:String},
   chitietsp: [{ type: db.mongoose.Schema.Types.ObjectId, ref: 'chitietsp' }],
   manhinh: { type: String },
   chip: { type: String },

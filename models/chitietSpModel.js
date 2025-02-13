@@ -6,7 +6,8 @@ const chitietspSchema = new db.mongoose.Schema({
     content: { type: String },
     price: { type: String },
     loaisp: { type: String },
-    idloaisp: { type: db.mongoose.Schema.Types.ObjectId, ref: 'loaisp' }
+    idloaisp: { type: db.mongoose.Schema.Types.ObjectId, ref: 'loaisp' },
+    namekhongdau:{type:String}
 });
 
 const ChitietSp = db.mongoose.model('chitietsp', chitietspSchema);

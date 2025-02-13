@@ -1,8 +1,16 @@
-const LoaiSP = require('../models/LoaiSanPham')
-
 const router = require('express').Router()
 const LoaiSP = require('../models/LoaiSanPham')
 const Sp = require('../models/chitietSpModel')
+const unicode = require('unidecode')
+
+function removeSpecialChars (str) {
+  const specialChars = /[:+,!@#$%^&*()\-/?.\s]/g // Bao gồm cả dấu cách (\s)
+  return str
+    .replace(specialChars, '-') // Thay tất cả ký tự đặc biệt và dấu cách bằng dấu -
+    .replace(/-+/g, '-') // Loại bỏ dấu - thừa (nhiều dấu liền nhau chỉ còn 1)
+    .replace(/^-|-$/g, '') // Loại bỏ dấu - ở đầu hoặc cuối chuỗi
+}
+
 router.post('/postloaisp', async (req, res) => {
   try {
     const {
@@ -17,6 +25,9 @@ router.post('/postloaisp', async (req, res) => {
       congsac,
       thongtin
     } = req.body
+    const namekhongdau1 = unicode(name)
+    const namekhongdau = removeSpecialChars(namekhongdau1)
+
     const tensp = new LoaiSP.LoaiSP({
       name,
       manhinh,
@@ -27,10 +38,11 @@ router.post('/postloaisp', async (req, res) => {
       pinsac,
       hang,
       congsac,
-      thongtin
+      thongtin,
+      namekhongdau
     })
     await tensp.save()
-    res.redirect('/main')
+    res.json(tensp)
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
@@ -52,6 +64,9 @@ router.post('/putloaisp/:id', async (req, res) => {
       congsac,
       thongtin
     } = req.body
+    const namekhongdau1 = unicode(name)
+    const namekhongdau = removeSpecialChars(namekhongdau1)
+
     await LoaiSP.LoaiSP.findByIdAndUpdate(id, {
       name,
       manhinh,
@@ -62,9 +77,10 @@ router.post('/putloaisp/:id', async (req, res) => {
       pinsac,
       hang,
       congsac,
-      thongtin
+      thongtin,
+      namekhongdau
     })
-    res.redirect('/main')
+    res.json({ message: 'sửa thành công' })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
@@ -84,7 +100,7 @@ router.post('/deleteloaisp/:id', async (req, res) => {
       })
     )
     await LoaiSP.LoaiSP.deleteOne({ _id: id })
-    res.redirect('/main')
+    res.json({ message: 'xóa thành công' })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
