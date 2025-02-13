@@ -9,6 +9,11 @@ var db = require('./models/db')
 const userroutes = require('./routes/UserRouter')
 const sanphamroutes = require('./routes/SanPhamRoutes')
 const loaisanphamroutes = require('./routes/LoaiSanPhamRoutes')
+const dungluongroutes = require('./routes/DungLuongRoutes')
+const mausacroutes = require('./routes/MauSacRoutes')
+const phantramroutes = require('./routes/PhanTramRoutes')
+const blogroutes = require('./routes/BlogRoutes')
+const mausacriengroutes = require('./routes/MauSacRiengRoutes')
 const uri =
   'mongodb+srv://baongocxink03:KD3qvAqFfpKC1uzX@cluster0.aocmw.mongodb.net/webbandienthoai?retryWrites=true&w=majority'
 
@@ -40,6 +45,11 @@ app.use(express.static(path.join(__dirname, '/uploads')))
 app.use('/', userroutes)
 app.use('/', sanphamroutes)
 app.use('/', loaisanphamroutes)
+app.use('/', dungluongroutes)
+app.use('/', mausacroutes)
+app.use('/', phantramroutes)
+app.use('/', blogroutes)
+app.use('/',mausacriengroutes)
 
 app.listen(3005, () => {
   console.log('Server is running on port 3005')
