@@ -107,4 +107,22 @@ router.post('/deleteloaisp/:id', async (req, res) => {
   }
 })
 
+router.get('/theloaisanpham', async (req, res) => {
+  try {
+    const theloai = await LoaiSP.LoaiSP.find().lean()
+    const theloaijson = await Promise.all(
+      theloai.map(async tl => {
+        return {
+          _id: tl._id,
+          name: tl.name,
+          namekhongdau: tl.namekhongdau
+        }
+      })
+    )
+    res.json(theloaijson)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 module.exports = router

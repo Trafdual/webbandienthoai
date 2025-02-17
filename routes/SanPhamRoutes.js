@@ -26,13 +26,14 @@ router.get('/sanpham', async (req, res) => {
               name: sp1.name,
               image: sp1.image,
               price: sp1.price,
-              namekhongdau: sp1.namekhongdau,
+              namekhongdau: sp1.namekhongdau
             }
           })
         )
         return {
           _id: tl._id,
           name: tl.name,
+          namekhongdau: tl.namekhongdau,
           sanpham: sanpham
         }
       })
@@ -194,6 +195,5 @@ router.get('/chitietsanpham/:tieude', async (req, res) => {
     console.log(error)
   }
 })
-
 
 module.exports = router

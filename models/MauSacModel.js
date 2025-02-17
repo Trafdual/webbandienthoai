@@ -1,13 +1,10 @@
 const db = require('./db')
 
-const mausacSchema = new db.mongoose.Schema({
+const mausacriengSchema = new db.mongoose.Schema({
   name: { type: String },
-  dungluong: { type: db.mongoose.Schema.Types.ObjectId, ref: 'dungluong' },
-  chitiet:[{
-    name: { type: String },
-    price: { type: String }
-  }]
+  price: { type: String },
+  image: [{ type: String }]
 })
 
-const mausac = db.mongoose.model('mausac', mausacSchema)
+const mausac = db.mongoose.model('mausac', mausacriengSchema)
 module.exports = { mausac }

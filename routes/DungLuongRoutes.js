@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const DungLuong = require('../models/dungluongModel')
+const DungLuong = require('../models/DungLuongModel')
 const LoaiSP = require('../models/LoaiSanPham')
 const MauSac = require('../models/MauSacModel')
 
@@ -54,6 +54,38 @@ router.get('/dungluong/:idloaisp', async (req, res) => {
   }
 })
 
+router.get('/dungluongmay/:namekhongdau', async (req, res) => {
+  try {
+    const namekhongdau = req.params.namekhongdau
+    const loaisp = await LoaiSP.LoaiSP.findOne({ namekhongdau: namekhongdau })
+    const dungluong = await Promise.all(
+      loaisp.dungluongmay.map(async dl => {
+        const dluong = await DungLuong.dungluong.findById(dl._id)
+        const mausac = await Promise.all(
+          dluong.mausac.map(async ms => {
+            const mausac1 = await MauSac.mausac.findById(ms._id)
+            return {
+              _id: mausac1._id,
+              name: mausac1.name,
+              price: mausac1.price,
+              images: mausac1.image
+            }
+          })
+        )
+        return {
+          _id: dluong._id,
+          name: dluong.name,
+          mausac: mausac
+        }
+      })
+    )
+    res.json(dungluong)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
+  }
+})
+
 router.post('/deletedungluong/:iddungluong/:idloaisp', async (req, res) => {
   try {
     const iddungluong = req.params.iddungluong
@@ -76,6 +108,5 @@ router.post('/deletedungluong/:iddungluong/:idloaisp', async (req, res) => {
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
   }
 })
-
 
 module.exports = router
