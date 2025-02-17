@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const DungLuong = require('../models/DungLuongModel')
+const DungLuong = require('../models/DungLuongModel.js')
 const LoaiSP = require('../models/LoaiSanPham')
 const MauSac = require('../models/MauSacModel')
 

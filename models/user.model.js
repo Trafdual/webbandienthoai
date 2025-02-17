@@ -1,12 +1,11 @@
 const db = require('./db')
 
 const userSchema = new db.mongoose.Schema({
-  hovaten: { type: String },
+  username: { type: String },
   phone: { type: String },
   email: { type: String },
   password: { type: String, required: true },
-  role: { type: String, enum: ['admin', 'user'], default: 'user' },
-  hoadon: [{ type: db.mongoose.Schema.Types.ObjectId, ref: 'hoadon' }],
+  role: { type: String, enum: ['admin', 'user'], default: 'admin' },
   date: { type: String }
 })
 

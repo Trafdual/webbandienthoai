@@ -87,6 +87,16 @@ router.post('/putloaisp/:id', async (req, res) => {
   }
 })
 
+router.get('/getchitiettl/:idtheloai', async (req, res) => {
+  try {
+    const idtheloai = req.params.idtheloai
+    const theloai = await LoaiSP.LoaiSP.findById(idtheloai)
+    res.json(theloai)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
+  }
+})
 router.post('/deleteloaisp/:id', async (req, res) => {
   try {
     const id = req.params.id
@@ -107,6 +117,38 @@ router.post('/deleteloaisp/:id', async (req, res) => {
   }
 })
 
+router.post('/deletehangloatloaisp', async (req, res) => {
+  try {
+    const { ids } = req.body 
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'Danh sách ID không hợp lệ' })
+    }
+
+    const loaiSPs = await LoaiSP.LoaiSP.find({ _id: { $in: ids } })
+
+    if (loaiSPs.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'Không tìm thấy thể loại nào để xóa' })
+    }
+
+    await Promise.all(
+      loaiSPs.map(async loaiSP => {
+        await Sp.ChitietSp.deleteMany({ _id: { $in: loaiSP.chitietsp } })
+      })
+    )
+
+    await LoaiSP.LoaiSP.deleteMany({ _id: { $in: ids } })
+
+    res.json({ message: `Đã xóa ${ids.length} thể loại thành công` })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
+  }
+})
+
+
 router.get('/theloaisanpham', async (req, res) => {
   try {
     const theloai = await LoaiSP.LoaiSP.find().lean()
@@ -116,6 +158,30 @@ router.get('/theloaisanpham', async (req, res) => {
           _id: tl._id,
           name: tl.name,
           namekhongdau: tl.namekhongdau
+        }
+      })
+    )
+    res.json(theloaijson)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+router.get('/theloaiadmin', async (req, res) => {
+  try {
+    const theloai = await LoaiSP.LoaiSP.find().lean()
+    const theloaijson = await Promise.all(
+      theloai.map(async tl => {
+        return {
+          _id: tl._id,
+          name: tl.name,
+          chip: tl.chip,
+          ram: tl.ram,
+          dungluong: tl.dungluong,
+          camera: tl.camera,
+          pinsac: tl.pinsac,
+          hang: tl.hang,
+          congsac: tl.congsac
         }
       })
     )

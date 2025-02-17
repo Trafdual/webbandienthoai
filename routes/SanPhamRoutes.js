@@ -119,7 +119,7 @@ router.post(
 
       await chitietsp.save()
 
-      res.redirect('/main')
+      res.json({ message: 'Cập nhật thành công' })
     } catch (error) {
       console.error(error)
       res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
@@ -144,7 +144,44 @@ router.post('/deletechitietsp/:id', async (req, res) => {
 
     await Sp.ChitietSp.deleteOne({ _id: id })
 
-    res.redirect('/main')
+    res.json({ message: 'xóa thành công' })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
+  }
+})
+
+router.post('/deletechitietsphangloat', async (req, res) => {
+  try {
+    const { ids } = req.body
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'Danh sách ID không hợp lệ' })
+    }
+
+    const chitietspList = await Sp.ChitietSp.find({ _id: { $in: ids } })
+
+    if (chitietspList.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'Không tìm thấy chi tiết sản phẩm nào để xóa' })
+    }
+
+    await Promise.all(
+      chitietspList.map(async chitietsp => {
+        const loaisp = await LoaiSP.LoaiSP.findById(chitietsp.idloaisp)
+        if (loaisp) {
+          loaisp.chitietsp = loaisp.chitietsp.filter(
+            chitiet => !ids.includes(chitiet.toString())
+          )
+          await loaisp.save()
+        }
+      })
+    )
+
+    await Sp.ChitietSp.deleteMany({ _id: { $in: ids } })
+
+    res.json({ message: `Đã xóa ${ids.length} chi tiết sản phẩm thành công` })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
@@ -171,6 +208,7 @@ router.get('/san-pham/:nametheloai', async (req, res) => {
     )
     const sanphamjson = {
       nametheloai: theloai.name,
+      namekhongdau: theloai.namekhongdau,
       sanpham: sanpham
     }
     res.json(sanphamjson)
@@ -191,6 +229,37 @@ router.get('/chitietsanpham/:tieude', async (req, res) => {
       mota: sanpham.content
     }
     res.json(sanphamjson)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+router.get('/getsanpham/:idtheloai', async (req, res) => {
+  try {
+    const idtheloai = req.params.idtheloai
+    const theloai = await LoaiSP.LoaiSP.findById(idtheloai)
+    const sanpham = await Promise.all(
+      theloai.chitietsp.map(async sp => {
+        const sp1 = await Sp.ChitietSp.findById(sp._id)
+        return {
+          _id: sp1._id,
+          name: sp1.name,
+          image: sp1.image,
+          price: sp1.price
+        }
+      })
+    )
+    res.json(sanpham)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+router.get('/getchitietspadmin/:idsp', async (req, res) => {
+  try {
+    const idsp = req.params.idsp
+    const sanpham = await Sp.ChitietSp.findById(idsp)
+    res.json(sanpham)
   } catch (error) {
     console.log(error)
   }

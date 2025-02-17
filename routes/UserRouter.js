@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const User = require('../models/user.model')
 router.post('/register', async (req, res) => {
   try {
-    const { hovaten, email, password, role, phone } = req.body
+    const { username, email, password, role, phone } = req.body
 
     if (!phone || !/^\d{10}$/.test(phone)) {
       return res.status(400).json({ message: 'Số điện thoại không hợp lệ' })
@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const user = new User.User({
-      hovaten,
+      username,
       email,
       password: hashedPassword,
       role,
@@ -39,13 +39,13 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.post('/loginfull', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body
-    const user = await User.User.findOne({ email })
+    const { username, password } = req.body
+    const user = await User.User.findOne({ username: username })
 
     if (!user) {
-      return res.json({ message: 'email không chính xác' })
+      return res.json({ message: 'Không tìm thấy tên tài khoản' })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -54,11 +54,7 @@ router.post('/loginfull', async (req, res) => {
       return res.json({ message: 'nhập sai mật khẩu' })
     }
 
-    if (user.role === 'admin') {
-      return res.json({ role: 'admin', user: user })
-    } else {
-      return res.json({ role: 'user', user: user })
-    }
+    return res.json({ role: 'admin', user: user })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Đã xảy ra lỗi.' })

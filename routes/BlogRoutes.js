@@ -17,7 +17,7 @@ router.post(
   async (req, res) => {
     try {
       const { tieude_blog, noidung } = req.body
-      const domain = 'http;//localhost:3005'
+      const domain = 'http://localhost:3005'
 
       const image = req.files['image']
         ? `${domain}/${req.files['image'][0].filename}`
@@ -71,22 +71,27 @@ router.post('/deleteblog/:idblog', async (req, res) => {
 
 router.get('/getblog', async (req, res) => {
   try {
-    const blog = await Blog.blogModel.find().lean() // Tìm tất cả blog
+    const blog = await Blog.blogModel.find().lean()
     const blogjson = blog.map(bl => {
+      const ngayTao = new Date(
+        parseInt(bl._id.toString().substring(0, 8), 16) * 1000
+      )
       return {
         _id: bl._id,
         tieude_blog: bl.tieude_blog,
         tieude_khongdau: bl.tieude_khongdau,
         img_blog: bl.img_blog,
-        noidung: bl.noidung
+        noidung: bl.noidung,
+        ngay_tao: ngayTao.toLocaleDateString('vi-VN') // Format dd/mm/yyyy
       }
     })
-    res.json(blogjson) // Trả về danh sách blog
+    res.json(blogjson)
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
   }
 })
+
 
 router.get('/chitietblog/:tieude', async (req, res) => {
   try {
