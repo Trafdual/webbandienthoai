@@ -92,11 +92,21 @@ router.get('/getblog', async (req, res) => {
   }
 })
 
-
 router.get('/chitietblog/:tieude', async (req, res) => {
   try {
     const tieude = req.params.tieude
     const blog = await Blog.blogModel.findOne({ tieude_khongdau: tieude })
+    res.json(blog)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
+  }
+})
+
+router.get('/chitietblog1/:id', async (req, res) => {
+  try {
+    const id = req.params.id
+    const blog = await Blog.blogModel.findById(id)
     res.json(blog)
   } catch (error) {
     console.error(error)

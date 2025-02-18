@@ -2,7 +2,6 @@ const multer = require('multer')
 const path = require('path')
 const pathToUploads = path.resolve(__dirname, '../uploads')
 
-// Cấu hình lưu trữ với tên file không trùng lặp
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, pathToUploads)
@@ -15,7 +14,6 @@ const storage = multer.diskStorage({
   }
 })
 
-// Khởi tạo multer
 const upload = multer({ storage: storage })
 
 module.exports = upload
