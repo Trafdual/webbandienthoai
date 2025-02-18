@@ -97,6 +97,25 @@ router.get('/dungluongmay/:namekhongdau', async (req, res) => {
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
   }
 })
+router.get('/getmausacgh/:iddungluong',async(req,res)=>{
+  try {
+    const iddungluong = req.params.iddungluong
+    const dungluong = await DungLuong.dungluong.findById(iddungluong)
+    const mausac = await Promise.all(
+      dungluong.mausac.map(async ms => {
+        const maus = await MauSac.mausac.findById(ms._id)
+        return {
+          _id: maus._id,
+          name: maus.name,
+          price: maus.price || 0
+        }
+      })
+    )
+    res.json(mausac)
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 router.post('/deletedungluong/:iddungluong', async (req, res) => {
   try {

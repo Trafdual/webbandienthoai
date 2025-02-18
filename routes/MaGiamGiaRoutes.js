@@ -70,4 +70,14 @@ router.post('/deletemagg', async (req, res) => {
   }
 })
 
+router.get('/getchitietmagg/:idmagg', async (req, res) => {
+  try {
+    const idmagg = req.params.idmagg
+    const magg = await MaGiamGia.magiamgia.findById(idmagg)
+    res.json(magg)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Lỗi trong quá trình xóa' })
+  }
+})
 module.exports = router

@@ -226,7 +226,7 @@ router.get('/chitietsanpham/:tieude', async (req, res) => {
       name: sanpham.name,
       image: sanpham.image,
       price: sanpham.price,
-      mota: sanpham.content
+      mota: sanpham.content,
     }
     res.json(sanphamjson)
   } catch (error) {
