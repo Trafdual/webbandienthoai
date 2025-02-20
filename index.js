@@ -15,6 +15,7 @@ const dungluongroutes = require('./routes/DungLuongRoutes')
 const blogroutes = require('./routes/BlogRoutes')
 const mausacriengroutes = require('./routes/MauSacRiengRoutes')
 const magiamgiaroutes = require('./routes/MaGiamGiaRoutes')
+const hoadonrouter = require('./routes/HoaDonRoutes')
 const uri =
   'mongodb+srv://baongocxink03:KD3qvAqFfpKC1uzX@cluster0.aocmw.mongodb.net/webbandienthoai?retryWrites=true&w=majority'
 
@@ -53,6 +54,7 @@ app.use('/', blogroutes)
 app.use('/', mausacriengroutes)
 
 app.use('/', magiamgiaroutes)
+app.use('/',hoadonrouter)
 
 app.listen(3005, () => {
   console.log('Server is running on port 3005')
