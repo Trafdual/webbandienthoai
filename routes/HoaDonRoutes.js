@@ -225,6 +225,7 @@ router.get('/vnpay_return', async (req, res) => {
   let secureHash = vnp_Params['vnp_SecureHash']
   let orderId = vnp_Params['vnp_TxnRef']
   let hoadon = await HoaDon.hoadon.findOne({ orderId: orderId })
+
   let magiamgia = await MaGiamGia.magiamgia.findOne({
     magiamgia: hoadon.magiamgia
   })
@@ -245,8 +246,10 @@ router.get('/vnpay_return', async (req, res) => {
   if (secureHash === signed) {
     if (vnp_Params['vnp_ResponseCode'] === '00') {
       hoadon.thanhtoan = true
-      magiamgia.soluong = magiamgia.soluong - 1
-      await magiamgia.save()
+      if (magiamgia) {
+        magiamgia.soluong = magiamgia.soluong - 1
+        await magiamgia.save()
+      }
       await hoadon.save()
 
       res.redirect('http://localhost:3000/thanhcong')
