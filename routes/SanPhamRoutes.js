@@ -50,11 +50,60 @@ router.get('/sanpham', async (req, res) => {
   }
 })
 
+router.get('/search', async (req, res) => {
+  try {
+    const keyword = req.query.keyword || ''
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 8
+    const skip = (page - 1) * limit
+
+    const searchTerms = keyword
+      .split(/\s+/)
+      .map(term => term.trim())
+      .filter(term => term.length > 0)
+
+    const regex = new RegExp(searchTerms.join('.*'), 'i')
+
+    const searchResults = await Sp.ChitietSp.find({ name: { $regex: regex } })
+    const sanphamTotal = searchResults.length
+    const sanphamPage = searchResults.slice(skip, skip + limit)
+
+    const sanphamjson = await Promise.all(
+      sanphamPage.map(async sanpham => {
+        const sp1 = await Sp.ChitietSp.findById(sanpham._id)
+        const theloai = await LoaiSP.LoaiSP.findById(sp1.idloaisp)
+        return {
+          _id: sp1._id,
+          name: sp1.name,
+          image: sp1.image,
+          price:
+            theloai.khuyenmai === 0
+              ? sp1.price
+              : sp1.price - (sp1.price * theloai.khuyenmai) / 100,
+          giagoc: sp1.price,
+          khuyenmai: theloai.khuyenmai,
+          namekhongdau: sp1.namekhongdau
+        }
+      })
+    )
+
+    res.json({
+      sanphamjson,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(sanphamTotal / limit),
+        totalItems: sanphamTotal
+      }
+    })
+  } catch (error) {
+    console.error('Lỗi khi tìm kiếm sản phẩm:', error)
+    res.status(500).json({ success: false, message: 'Lỗi server' })
+  }
+})
+
 router.post(
   '/postchitietsp/:id',
-  uploads.fields([
-    { name: 'image', maxCount: 1 } // Một ảnh duy nhất
-  ]),
+  uploads.fields([{ name: 'image', maxCount: 1 }]),
   async (req, res) => {
     try {
       const id = req.params.id
