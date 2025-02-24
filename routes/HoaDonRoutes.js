@@ -251,7 +251,7 @@ router.get('/vnpay_return', async (req, res) => {
   let signData = querystring.stringify(vnp_Params, { encode: false })
   let crypto = require('crypto')
   let hmac = crypto.createHmac('sha512', secretKey)
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
+  let signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
 
   if (secureHash === signed) {
     if (vnp_Params['vnp_ResponseCode'] === '00') {
@@ -262,12 +262,13 @@ router.get('/vnpay_return', async (req, res) => {
       }
       await hoadon.save()
 
-      res.redirect('http://localhost:3000/thanhcong')
+      return res.redirect('http://localhost:3000/thanhcong?success=true')
     }
-  } else {
-    res.redirect('http://localhost:3000/thanhcong')
   }
+
+  res.redirect('http://localhost:3000/thanhcong')
 })
+
 
 router.post('/settrangthai/:idhoadon', async (req, res) => {
   try {
