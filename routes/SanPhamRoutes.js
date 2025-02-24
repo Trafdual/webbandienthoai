@@ -6,11 +6,11 @@ const uploads = require('./upload')
 const unicode = require('unidecode')
 
 function removeSpecialChars (str) {
-  const specialChars = /[:+,!@#$%^&*()\-/?.\s]/g // Bao gồm cả dấu cách (\s)
+  const specialChars = /[:+,!@#$%^&*()\-/?.\s]/g
   return str
-    .replace(specialChars, '-') // Thay tất cả ký tự đặc biệt và dấu cách bằng dấu -
-    .replace(/-+/g, '-') // Loại bỏ dấu - thừa (nhiều dấu liền nhau chỉ còn 1)
-    .replace(/^-|-$/g, '') // Loại bỏ dấu - ở đầu hoặc cuối chuỗi
+    .replace(specialChars, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
 router.get('/sanpham', async (req, res) => {
@@ -25,8 +25,13 @@ router.get('/sanpham', async (req, res) => {
               _id: sp1._id,
               name: sp1.name,
               image: sp1.image,
-              price: sp1.price,
-              namekhongdau: sp1.namekhongdau
+              price:
+                tl.khuyenmai === 0
+                  ? sp1.price
+                  : sp1.price - (sp1.price * tl.khuyenmai) / 100,
+              giagoc: sp1.price,
+              namekhongdau: sp1.namekhongdau,
+              khuyenmai: tl.khuyenmai
             }
           })
         )
@@ -34,6 +39,7 @@ router.get('/sanpham', async (req, res) => {
           _id: tl._id,
           name: tl.name,
           namekhongdau: tl.namekhongdau,
+          khuyenmai: tl.khuyenmai,
           sanpham: sanpham
         }
       })
@@ -223,7 +229,7 @@ router.get('/san-pham-pt/:nametheloai', async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 8
     const skip = (page - 1) * limit
-    const sortOrder = req.query.sort === 'desc' ? -1 : 1 
+    const sortOrder = req.query.sort === 'desc' ? -1 : 1
 
     const theloai = await LoaiSP.LoaiSP.findOne({ namekhongdau: nametheloai })
     if (!theloai) {
@@ -241,7 +247,12 @@ router.get('/san-pham-pt/:nametheloai', async (req, res) => {
           name: sp1.name,
           namekhongdau: sp1.namekhongdau,
           image: sp1.image,
-          price: sp1.price
+          price:
+            theloai.khuyenmai === 0
+              ? sp1.price
+              : sp1.price - (sp1.price * theloai.khuyenmai) / 100,
+          giagoc: sp1.price,
+          khuyenmai: theloai.khuyenmai
         }
       })
     )
@@ -251,6 +262,7 @@ router.get('/san-pham-pt/:nametheloai', async (req, res) => {
     res.json({
       nametheloai: theloai.name,
       namekhongdau: theloai.namekhongdau,
+      khuyenmai: theloai.khuyenmai,
       sanpham,
       pagination: {
         currentPage: page,
@@ -264,7 +276,6 @@ router.get('/san-pham-pt/:nametheloai', async (req, res) => {
   }
 })
 
-
 router.get('/chitietsanpham/:tieude', async (req, res) => {
   try {
     const tieude = req.params.tieude
@@ -274,7 +285,7 @@ router.get('/chitietsanpham/:tieude', async (req, res) => {
       name: sanpham.name,
       image: sanpham.image,
       price: sanpham.price,
-      mota: sanpham.content,
+      mota: sanpham.content
     }
     res.json(sanphamjson)
   } catch (error) {

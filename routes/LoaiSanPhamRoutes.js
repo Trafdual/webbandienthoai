@@ -23,7 +23,8 @@ router.post('/postloaisp', async (req, res) => {
       pinsac,
       hang,
       congsac,
-      thongtin
+      thongtin,
+      khuyenmai
     } = req.body
     const namekhongdau1 = unicode(name)
     const namekhongdau = removeSpecialChars(namekhongdau1)
@@ -39,7 +40,8 @@ router.post('/postloaisp', async (req, res) => {
       hang,
       congsac,
       thongtin,
-      namekhongdau
+      namekhongdau,
+      khuyenmai
     })
     await tensp.save()
     res.json(tensp)
@@ -62,7 +64,8 @@ router.post('/putloaisp/:id', async (req, res) => {
       pinsac,
       hang,
       congsac,
-      thongtin
+      thongtin,
+      khuyenmai
     } = req.body
     const namekhongdau1 = unicode(name)
     const namekhongdau = removeSpecialChars(namekhongdau1)
@@ -78,7 +81,8 @@ router.post('/putloaisp/:id', async (req, res) => {
       hang,
       congsac,
       thongtin,
-      namekhongdau
+      namekhongdau,
+      khuyenmai
     })
     res.json({ message: 'sửa thành công' })
   } catch (error) {
@@ -119,7 +123,7 @@ router.post('/deleteloaisp/:id', async (req, res) => {
 
 router.post('/deletehangloatloaisp', async (req, res) => {
   try {
-    const { ids } = req.body 
+    const { ids } = req.body
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({ message: 'Danh sách ID không hợp lệ' })
@@ -147,7 +151,6 @@ router.post('/deletehangloatloaisp', async (req, res) => {
     res.status(500).json({ message: `Đã xảy ra lỗi: ${error}` })
   }
 })
-
 
 router.get('/theloaisanpham', async (req, res) => {
   try {
@@ -181,7 +184,8 @@ router.get('/theloaiadmin', async (req, res) => {
           camera: tl.camera,
           pinsac: tl.pinsac,
           hang: tl.hang,
-          congsac: tl.congsac
+          congsac: tl.congsac,
+          khuyenmai: tl.khuyenmai
         }
       })
     )

@@ -33,6 +33,16 @@ router.get('/gethoadon', async (req, res) => {
   }
 })
 
+router.post('/deletehoaddon', async (req, res) => {
+  try {
+    const { ids } = req.body
+    await HoaDon.hoadon.deleteMany({ _id: { $in: ids } })
+    res.json({ message: 'Xóa hóa đơn thành công' })
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 router.post('/posthoadon', async (req, res) => {
   try {
     const {
