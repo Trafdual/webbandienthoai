@@ -82,7 +82,8 @@ router.get('/search', async (req, res) => {
               : sp1.price - (sp1.price * theloai.khuyenmai) / 100,
           giagoc: sp1.price,
           khuyenmai: theloai.khuyenmai,
-          namekhongdau: sp1.namekhongdau
+          namekhongdau: sp1.namekhongdau,
+          nametheloai:theloai.namekhongdau
         }
       })
     )
